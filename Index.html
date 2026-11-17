@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Գիտելիք — ուսուցիչների բլոգներ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d1b26;--paper:#fff;--panel:#ffffff;--line:rgba(0,0,0,.1);color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f2f0fa;--panel:#24222e;--line:rgba(255,255,255,.14)}}
+:root[data-theme="dark"]{--ink:#f2f0fa;--panel:#24222e;--line:rgba(255,255,255,.14)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:"Noto Sans Armenian",system-ui,sans-serif;background:#ff9d8a;color:#fff;transition:background .6s}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:6px}
+
+/* nav */
+header{position:fixed;inset:0 0 auto;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 2.2vh) 3vw 0;text-shadow:0 1px 8px rgba(0,0,0,.22)}
+.logo{font-weight:900;font-size:clamp(20px,3.2vh,30px);letter-spacing:-.01em}
+nav{display:flex;gap:clamp(14px,2.4vw,34px)}
+nav button,.all{background:none;border:0;color:inherit;font:inherit;font-weight:700;font-size:clamp(11px,1.7vh,14px);cursor:pointer;padding:4px 0;border-bottom:2px solid transparent;transition:border-color .3s;white-space:nowrap;text-shadow:inherit}
+nav button[aria-current="true"]{border-color:#fff}
+.all{justify-self:end}
+
+/* slides */
+.stage{position:fixed;inset:0;overflow:hidden}
+.slide{position:absolute;inset:0;background:var(--bg);visibility:hidden;--px:0;--py:0}
+.slide.on{visibility:visible}
+.word{position:absolute;left:0;right:0;top:50%;transform:translateY(-54%);text-align:center;font-weight:900;line-height:1;white-space:nowrap;z-index:1;color:#fff;
+  font-size:min(40vh,calc(138vw / var(--n)));letter-spacing:-.02em;transform:translate(calc(var(--px)*-1.2vw),-54%);transition:transform .5s ease-out}
+.can{position:absolute;left:50%;top:51%;z-index:3;width:clamp(120px,27vh,240px);height:clamp(230px,52vh,470px);margin:calc(clamp(230px,52vh,470px)/-2) 0 0 calc(clamp(120px,27vh,240px)/-2);
+  border-radius:12% / 5%;background:linear-gradient(90deg,color-mix(in srgb,var(--bg) 62%,#000) 0,color-mix(in srgb,var(--bg) 80%,#fff 0) 18%,color-mix(in srgb,var(--bg) 78%,#fff) 34%,color-mix(in srgb,var(--bg) 70%,#000) 100%);
+  display:grid;place-items:center;transform:translate(calc(var(--px)*.5vw),calc(var(--py)*.5vh));transition:transform .5s ease-out}
+.can::before{content:"";position:absolute;inset:0 0 auto;height:6%;border-radius:12% / 60%;background:rgba(255,255,255,.35)}
+.can::after{content:"";position:absolute;left:-20%;right:-20%;bottom:-9%;height:6%;border-radius:50%;background:rgba(0,0,0,.18);filter:blur(10px);z-index:-1}
+.label{width:80%;aspect-ratio:3/5;border-radius:50% / 34%;background:#fffdf8;color:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8vh;padding:0 6%;text-align:center;box-shadow:0 0 0 .6vh color-mix(in srgb,var(--bg) 35%,transparent) inset}
+.label b{font-size:min(4vh,calc(21vh * 1.45 / var(--n)));line-height:1.05;color:color-mix(in srgb,var(--bg) 55%,#000);font-weight:900}
+.label i{font-style:normal;font-size:min(7vh,52px)}
+.label small{font-size:1.5vh;font-weight:700;color:color-mix(in srgb,var(--bg) 60%,#000)}
+
+/* floating items */
+.it{position:absolute;z-index:2;font-size:var(--s);line-height:1;transform:translate(calc(var(--px)*var(--d)*1vw),calc(var(--py)*var(--d)*1vh));transition:transform .6s ease-out;filter:drop-shadow(0 2.4vh 1.4vh rgba(0,0,0,.18))}
+.it.f{z-index:4}
+.it.bl{filter:blur(3px) drop-shadow(0 2.4vh 1.4vh rgba(0,0,0,.18))}
+.it span{display:block;transform:scale(0) rotate(-60deg)}
+.slide.on .it span{animation:pop .9s cubic-bezier(.2,1.3,.4,1) forwards var(--t),bob 5s ease-in-out infinite calc(var(--t) + .9s)}
+@keyframes pop{to{transform:scale(1) rotate(var(--r))}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-1.6vh) rotate(calc(var(--r) + 6deg))}}
+.letter{display:inline-grid;place-items:center;width:1.1em;height:1.1em;border-radius:50%;background:#fff;color:var(--bg);font-weight:900;font-size:.62em}
+
+/* bottom */
+.cta{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 5vh);transform:translateX(-50%);z-index:10;font-weight:900;font-size:clamp(13px,1.9vh,16px);padding:10px 22px;border-radius:99px;text-shadow:0 1px 8px rgba(0,0,0,.22);white-space:nowrap;transition:background .3s}
+.cta:hover{background:rgba(255,255,255,.25)}
+.arr{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 4.4vh);z-index:10;width:48px;height:48px;display:grid;place-items:center;border:0;background:none;color:#fff;font-size:30px;cursor:pointer;text-shadow:0 1px 8px rgba(0,0,0,.22)}
+.arr.l{left:2.5vw}.arr.r{right:2.5vw}
+
+/* all-blogs panel */
+.panel{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.35);display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.panel.open{opacity:1;pointer-events:auto}
+.box{background:var(--panel);color:var(--ink);width:min(460px,100%);max-height:86%;overflow:auto;border-radius:20px;padding:22px;transform:translateY(16px);transition:transform .3s}
+.panel.open .box{transform:none}
+.box h2{font-size:20px;margin-bottom:12px}
+.box a{display:flex;align-items:center;gap:12px;padding:12px 4px;border-top:1px solid var(--line);font-weight:700}
+.box a:hover{opacity:.7}
+.dot{width:16px;height:16px;border-radius:50%;flex:none}
+.box button{margin-top:14px;font:inherit;font-weight:700;border:0;background:var(--ink);color:var(--panel);padding:10px 18px;border-radius:99px;cursor:pointer}
+
+@media (max-width:760px){
+  header{grid-template-columns:1fr auto;row-gap:1vh}
+  nav{grid-row:2;grid-column:1/-1;overflow-x:auto;scrollbar-width:none;gap:18px;padding-bottom:2px}
+  nav::-webkit-scrollbar{display:none}
+  .it{--s:9vh!important}
+  .can{top:56%}
+}
+@media (prefers-reduced-motion:reduce){.slide.on .it span{animation:pop .01s forwards;transform:scale(1) rotate(var(--r))}*{transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#" aria-label="Գիտելիք">Գիտելիք</a>
+  <nav id="nav" aria-label="Առարկաներ"></nav>
+  <button class="all" id="openAll" type="button">Բոլոր բլոգները</button>
+</header>
+
+<main class="stage" id="stage"></main>
+<button class="arr l" id="prev" type="button" aria-label="Նախորդ">←</button>
+<button class="arr r" id="next" type="button" aria-label="Հաջորդ">→</button>
+
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Բոլոր բլոգները">
+  <div class="box"><h2>Բոլոր բլոգները</h2><div id="list"></div><button id="close" type="button">Փակել</button></div>
+</div>
+
+<script>
+const SUBJECTS=[
+ {n:"Ռուսերեն",bg:"#ff9d8a",ic:"📖",em:["✏️","📚","🔤","🖍️","📝"],url:"https://aniave241090gmail.wordpress.com/"},
+ {n:"Մաթեմատիկա",bg:"#a4cf62",ic:"➗",em:["📐","➕","📏","✖️","🧮"],url:"https://melinaparsamyan.wordpress.com/"},
+ {n:"Հայոց լեզու",bg:"#a9a6ff",ic:"Ա",em:["A","📜","Բ","🖋️","Գ"],let:true,url:"https://susannaaslanyan.wordpress.com/"},
+ {n:"Անգլերեն",bg:"#5fc9e8",ic:"🔤",em:["A","🎧","B","📚","C"],let:true,url:"https://olyaverdyanteacher.wordpress.com/%d5%a1%d5%bc%d5%a1%d5%bb%d5%a1%d5%a4%d6%80%d5%a1%d5%b6%d6%84%d5%b6%d5%a5%d6%80%d5%ab-%d6%83%d5%a1%d6%83%d5%a5%d5%a9-7-%d6%80%d5%a4-%d5%a4%d5%a1%d5%bd%d5%a1%d6%80%d5%a1%d5%b6-2026-2027-%d5%b8%d6%82/"},
+ {n:"Քիմիա",bg:"#ffc25c",ic:"🧪",em:["⚗️","🔬","🧫","💧","🧪"],url:"https://gevorgyanhas.wordpress.com/%d6%84%d5%ab%d5%b4%d5%ab%d5%a1-7-%d6%80%d5%a4-%d5%a4%d5%a1%d5%bd%d5%a1%d6%80%d5%a1%d5%b6/"},
+ {n:"Աշխարհագրություն",bg:"#f08fb5",ic:"🌍",em:["🧭","🗺️","⛰️","🌋","🌊"],url:"https://annaohanyan8.wordpress.com/"},
+ {n:"Ֆիզիկա",bg:"#4fd1b5",ic:"⚛️",em:["🔭","💡","🧲","🚀","⚡"],url:"https://docs.google.com/document/d/1bnyqiv7jqFZPhGvo0oXeZjYZNWuRGHJwyhanXm3Rm7U/edit?tab=t.0"}
+];
+// positions: left/right, top/bottom, size(vh), rotation, depth, delay, blur/front
+const POS=[
+ ["left:13%;top:20%",13,"-14deg",-1.6,.25,"bl"],
+ ["right:7%;top:16%",16,"18deg",1.4,.4,""],
+ ["left:2%;bottom:15%",19,"-8deg",-2.4,.55,"f"],
+ ["right:3%;bottom:19%",17,"24deg",2.2,.7,"f"],
+ ["left:30%;top:11%",8,"10deg",-.8,.85,"bl"]
+];
+const stage=document.getElementById("stage"),nav=document.getElementById("nav"),list=document.getElementById("list");
+const slides=[];
+SUBJECTS.forEach((s,i)=>{
+  const el=document.createElement("section");
+  el.className="slide";el.style.cssText=`--bg:${s.bg};--n:${[...s.n].length}`;
+  el.setAttribute("aria-label",s.n);
+  const items=s.em.map((e,k)=>{const p=POS[k];
+    return `<div class="it ${p[5]}" style="${p[0]};--s:${p[1]}vh;--r:${p[2]};--d:${p[3]};--t:${p[4]}s"><span>${s.let&&/^[A-ZԱ-Ֆ]$/.test(e)?`<b class="letter">${e}</b>`:e}</span></div>`}).join("");
+  el.innerHTML=`<div class="word" aria-hidden="true">${s.n}</div>${items}
+   <div class="can"><div class="label"><i>${s.ic}</i><b>${s.n}</b><small>Ուսուցչի բլոգ</small></div></div>
+   <a class="cta" href="${s.url}" target="_blank" rel="noopener">Բացել բլոգը</a>`;
+  stage.appendChild(el);slides.push(el);
+  const b=document.createElement("button");b.type="button";b.textContent=s.n;b.onclick=()=>go(i);nav.appendChild(b);
+  const a=document.createElement("a");a.href=s.url;a.target="_blank";a.rel="noopener";a.innerHTML=`<span class="dot" style="background:${s.bg}"></span>${s.n}`;list.appendChild(a);
+});
+let cur=-1,busy=false;
+function go(i,dir){
+  i=(i+slides.length)%slides.length;
+  if(i===cur||busy)return;
+  const first=cur<0;
+  dir=dir||(first||i>cur?1:-1);
+  const inc=slides[i],out=slides[cur];
+  if(first){inc.classList.add("on");inc.style.zIndex=2}
+  else{
+    busy=true;
+    inc.style.transition="none";inc.style.transform=`translateX(${dir*100}%)`;inc.style.zIndex=3;inc.classList.add("on");
+    out.style.zIndex=2;void inc.offsetWidth;
+    const t="transform .9s cubic-bezier(.77,0,.18,1)";
+    inc.style.transition=t;out.style.transition=t;
+    inc.style.transform="none";out.style.transform=`translateX(${-dir*30}%)`;
+    setTimeout(()=>{out.classList.remove("on");out.style.transform="";out.style.transition="";out.style.zIndex="";inc.style.transition="";busy=false},950);
+  }
+  cur=i;
+  document.body.style.background=SUBJECTS[i].bg;
+  document.querySelector('meta[name=theme-color]')?.setAttribute("content",SUBJECTS[i].bg);
+  [...nav.children].forEach((b,k)=>b.setAttribute("aria-current",k===i));
+}
+document.getElementById("next").onclick=()=>go(cur+1,1);
+document.getElementById("prev").onclick=()=>go(cur-1,-1);
+addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(cur+1,1);if(e.key==="ArrowLeft")go(cur-1,-1);if(e.key==="Escape")panel.classList.remove("open")});
+let sx=null;
+addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});
+addEventListener("touchend",e=>{if(sx===null)return;const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)go(cur+(d<0?1:-1),d<0?1:-1);sx=null});
+let wl=0;addEventListener("wheel",e=>{const n=Date.now();if(n-wl<1000||Math.abs(e.deltaY)+Math.abs(e.deltaX)<20)return;wl=n;go(cur+((e.deltaY||e.deltaX)>0?1:-1))},{passive:true});
+addEventListener("pointermove",e=>{
+  const x=(e.clientX/innerWidth-.5)*2,y=(e.clientY/innerHeight-.5)*2;
+  slides.forEach(s=>{s.style.setProperty("--px",x.toFixed(3));s.style.setProperty("--py",y.toFixed(3))});
+});
+const panel=document.getElementById("panel");
+document.getElementById("openAll").onclick=()=>panel.classList.add("open");
+document.getElementById("close").onclick=()=>panel.classList.remove("open");
+panel.onclick=e=>{if(e.target===panel)panel.classList.remove("open")};
+go(0);
+</script>
+</body>
+</html>
